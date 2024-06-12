@@ -2,6 +2,7 @@ let array = [31, 19, -1, 22, 8];
 
 // selection sort
 function selectionSort(arr) {
+    arr = [...arr]; 
     let n = arr.length;
     
     for (let i = 0; i < n - 1; i++) {
@@ -25,9 +26,8 @@ let selSortArray = selectionSort(array);
 console.log("Selection sorted array: ", selSortArray);
 
 // insertion sort
-
-
 function insertionSort(arr) {
+    arr = [...arr];
     let n = arr.length;
     
     for (let i = 1; i < n; i++) {
@@ -45,53 +45,68 @@ function insertionSort(arr) {
 }
 
 let insSortArray = insertionSort(array);
-console.log("Insertion Sorted array: ", insSortArray);
+console.log("Insertion sorted array: ", insSortArray);
 
-// Quick sort
-
+// quick sort
 function quickSort(arr) {
-    if (arr.length <= 1) {
-        return arr;
-    }
-    
-    let pivot = arr[arr.length - 1];
-    let left = [];
-    let right = [];
-    
-    for (let i = 0; i < arr.length - 1; i++) {
-        if (arr[i] < pivot) {
-            left.push(arr[i]);
-        } else {
-            right.push(arr[i]);
-        }
-    }
-    
-    return [...quickSort(left), pivot, ...quickSort(right)];
+    arr = [...arr];
+    quickSortHelper(arr, 0, arr.length - 1);
+    return arr;
 }
 
-let quickSortArray = quickSort(array); 
-console.log("Quick Sorted array: ", quickSortArray);
+function quickSortHelper(arr, low, high) {
+    if (low < high) {
+        let pi = partition(arr, low, high);
+        quickSortHelper(arr, low, pi - 1);
+        quickSortHelper(arr, pi + 1, high);
+    }
+}
+
+function swap(arr, i, j) {
+    let temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+}
+
+function partition(arr, low, high) {
+    let pivot = arr[high];
+    let i = low - 1;
+    for (let j = low; j < high; j++) {
+        if (arr[j] < pivot) {
+            i++;
+            swap(arr, i, j);
+        }
+    }
+    swap(arr, i + 1, high);
+    return i + 1;
+}
+
+let quickSortArray = quickSort(array);
+console.log("Quick sorted array: ", quickSortArray);
 
 // merge sort
-function mergeSort(arr) {
+function mergeSort(arr, l, r) {
+    arr = [...arr]; 
+
     if (arr.length <= 1) {
-        return arr;
+        return arr.slice(); 
     }
+
+    const mid = Math.floor((l + r) / 2);
+
+    const leftArr = mergeSort(arr.slice(l, mid + 1), 0, mid - l); 
+    const rightArr = mergeSort(arr.slice(mid + 1, r + 1), 0, r - mid - 1); 
+
     
-    const middle = Math.floor(arr.length / 2);
-    const left = arr.slice(0, middle);
-    const right = arr.slice(middle);
-    
-    return merge(mergeSort(left), mergeSort(right));
+    return merge(leftArr, rightArr);
 }
 
 function merge(left, right) {
-    let result = [];
-    let leftIndex = 0;
-    let rightIndex = 0;
-    
+    const result = [];
+    let [leftIndex, rightIndex] = [0, 0];
+
     while (leftIndex < left.length && rightIndex < right.length) {
-        if (left[leftIndex] < right[rightIndex]) {
+        if (left[leftIndex] <= right[rightIndex]) {
             result.push(left[leftIndex]);
             leftIndex++;
         } else {
@@ -99,9 +114,11 @@ function merge(left, right) {
             rightIndex++;
         }
     }
-    
+
+
     return result.concat(left.slice(leftIndex)).concat(right.slice(rightIndex));
 }
 
-let mergeSortArray = mergeSort(array);
-console.log("Merge Sorted array: ", mergeSortArray);
+let n = array.length;
+let mergeSortArray = mergeSort(array, 0, n - 1);
+console.log("Merge sorted array: ", mergeSortArray);
