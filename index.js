@@ -84,41 +84,52 @@ function partition(arr, low, high) {
 let quickSortArray = quickSort(array);
 console.log("Quick sorted array: ", quickSortArray);
 
-// merge sort
-function mergeSort(arr, l, r) {
-    arr = [...arr]; 
 
-    if (arr.length <= 1) {
-        return arr.slice(); 
+// merge sort
+function merge(arr, start, mid, end) {
+
+    let start2 = mid + 1;
+
+    if (arr[mid] <= arr[start2]) {
+        return;
     }
 
-    const mid = Math.floor((l + r) / 2);
-
-    const leftArr = mergeSort(arr.slice(l, mid + 1), 0, mid - l); 
-    const rightArr = mergeSort(arr.slice(mid + 1, r + 1), 0, r - mid - 1); 
-
-    
-    return merge(leftArr, rightArr);
-}
-
-function merge(left, right) {
-    const result = [];
-    let [leftIndex, rightIndex] = [0, 0];
-
-    while (leftIndex < left.length && rightIndex < right.length) {
-        if (left[leftIndex] <= right[rightIndex]) {
-            result.push(left[leftIndex]);
-            leftIndex++;
+    while (start <= mid && start2 <= end) {
+        if (arr[start] <= arr[start2]) {
+            start++;
         } else {
-            result.push(right[rightIndex]);
-            rightIndex++;
+            let value = arr[start2];
+            let index = start2;
+
+            while (index != start) {
+                arr[index] = arr[index - 1];
+                index--;
+            }
+            arr[start] = value;
+
+            start++;
+            mid++;
+            start2++;
         }
     }
-
-
-    return result.concat(left.slice(leftIndex)).concat(right.slice(rightIndex));
 }
 
-let n = array.length;
-let mergeSortArray = mergeSort(array, 0, n - 1);
-console.log("Merge sorted array: ", mergeSortArray);
+function mergeSort(arr, l, r) {
+    if (l < r) {
+        let m = l + Math.floor((r - l) / 2);
+
+        mergeSort(arr, l, m);
+        mergeSort(arr, m + 1, r);
+
+        merge(arr, l, m, r);
+    }
+}
+
+let arr_size = array.length;
+
+let arr = [...array];
+mergeSort(arr, 0, arr_size - 1);
+
+console.log("Sorted array is:");
+console.log(arr);
+
